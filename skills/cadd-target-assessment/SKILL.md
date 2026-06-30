@@ -4,8 +4,9 @@ description: >-
   Produce a computational drug-discovery (CADD) target-assessment dossier for a
   protein target, output as a single self-contained HTML report. Covers protein
   basics (gene, length, molecular weight, subcellular location, biological
-  function), cross-species conservation (mouse/rat/dog/monkey identity), within-
-  family/paralog identity, the catalog of PDB structures (with bound ligands and
+  function), domain architecture (number of domains, per-domain function, and
+  residue ranges), cross-species conservation (mouse/rat/dog/monkey identity),
+  within-family/paralog identity, the catalog of PDB structures (with bound ligands and
   agonist/antagonist annotation), the structural mechanism of small-molecule
   modulation, and a final computational pros/cons + feasibility verdict. Use this
   whenever the user names a protein/drug target and asks to "assess", "evaluate",
@@ -88,14 +89,28 @@ python scripts/protein_info.py --acc P35367 --out work/protein.json
 Gene, synonyms, length, mass, subcellular location, family, function text, PDB
 count, and the sequence.
 
-**2. Cross-species conservation** (mouse, rat, dog, monkey)
+**2. Domain architecture** — how many domains, what each does, and its residue range
+```
+python scripts/domain_info.py --acc P35367 --out work/domains.json
+```
+Parses the UniProt feature table for architectural features (Domain, Repeat, Zinc
+finger, DNA binding, Transmembrane, Intramembrane, Topological domain, Region,
+Coiled coil, Motif), ordered N→C terminus, each with its residue range (start–end)
+and length; `domain_count` is the number of true Domain features. Also returns the
+UniProt domain free-text notes and the Pfam/InterPro/SMART family names that
+identify each domain. If the `note` field flags sparse annotation (few/no
+features), or the protein is clearly multi-domain but UniProt only annotates one,
+**supplement the domain breakdown from the literature / InterPro and attribute the
+source** — the user explicitly allows literature here.
+
+**3. Cross-species conservation** (mouse, rat, dog, monkey)
 ```
 python scripts/species_identity.py --ref-acc P35367 --out work/species.json
 ```
 Override the species set with `--species "mouse:10090,rat:10116,dog:9615,monkey:9544"`
 if a different model organism matters.
 
-**3. Within-family identity** — you supply the family/paralog human gene symbols.
+**4. Within-family identity** — you supply the family/paralog human gene symbols.
 You know the major families (GPCR subfamilies, kinase groups, channel families);
 when unsure, web-search "<target> family members" or check the UniProt family note
 first, then pass the genes:
@@ -106,7 +121,7 @@ Include the closest relatives that pose selectivity risk. For a receptor with
 cross-family look-alikes (e.g. H1 vs muscarinic/serotonin receptors), add those
 genes too — the report's selectivity discussion depends on it.
 
-**4. PDB structures**
+**5. PDB structures**
 ```
 python scripts/pdb_structures.py --acc P35367 --out work/pdb.json
 ```
@@ -115,7 +130,7 @@ numbering), bound ligand(s) with buffer/cryo additives filtered out, and the
 primary-citation title/journal/year (DOI/PMID when RCSB has them). The structure
 title usually names the real drug (e.g. comp_id `Y5E` ↔ "mepyramine").
 
-**5. Read the key papers.** The structure citations are your route into the
+**6. Read the key papers.** The structure citations are your route into the
 mechanism. Use `WebSearch`/`WebFetch` on the citation titles (and DOIs) to learn:
 - For each ligand-bound structure, **is the ligand an agonist, antagonist, inverse
   agonist, or biased agonist?** This is the single most important pharmacology
@@ -142,6 +157,11 @@ the report trustworthy:
 - **Attribute the narrative.** Mechanism, agonist/antagonist calls, and pocket
   observations must trace to a paper you read; link or cite it. Distinguish what
   the structure/data shows from your inference.
+- **Domain ranges come from the JSON.** Transcribe each domain's residue range and
+  count from `domains.json` verbatim into the Domain architecture table. Where
+  UniProt is sparse and you fill gaps from the literature / InterPro, mark those
+  rows as literature-sourced (attribute them) rather than blending them silently
+  with the UniProt-annotated rows.
 - **The agonist/antagonist column is the point** for receptors and channels. Use the
   modulator pills (`agonist` / `antagonist` / `inverse` / `neutral`). If the
   literature doesn't specify, mark it `neutral`/unknown rather than guessing.

@@ -4,6 +4,7 @@ A [Claude Code](https://code.claude.com) skill that turns a protein **target nam
 single self-contained **HTML dossier** for computer-aided drug design (CADD):
 
 - **Protein basics** — gene, length, molecular weight, subcellular location, biological function
+- **Domain architecture** — number of domains, per-domain function, and residue ranges (from the UniProt feature table, with Pfam/InterPro/SMART families)
 - **Cross-species conservation** — % identity to mouse / rat / dog / monkey orthologs
 - **Within-family identity** — % identity/similarity to the closest paralogs (selectivity landscape)
 - **PDB structure catalog** — every experimental structure with bound ligands, modeled positions, and (for receptors/channels) **agonist vs antagonist** annotation
@@ -77,6 +78,7 @@ skills/cadd-target-assessment/
 ├── scripts/                 # data collection (UniProt + RCSB via stdlib urllib + Biopython)
 │   ├── cadd_common.py        # HTTP + alignment helpers
 │   ├── protein_info.py       # gene / length / mass / location / family / function
+│   ├── domain_info.py        # domain architecture: count / function / residue ranges
 │   ├── species_identity.py   # mouse/rat/dog/monkey ortholog identity
 │   ├── family_identity.py    # paralog identity / similarity
 │   └── pdb_structures.py     # PDB structures + ligands + citations

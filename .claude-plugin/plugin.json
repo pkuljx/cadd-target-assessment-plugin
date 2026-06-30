@@ -1,7 +1,7 @@
 {
   "name": "cadd-target-assessment",
-  "version": "1.0.0",
-  "description": "Generate a computational drug-discovery (CADD) target-assessment dossier for a protein target as a single self-contained HTML report: protein basics, cross-species conservation, within-family/paralog identity, PDB structure catalog with ligand/agonist-antagonist annotation, modulation mechanism, and a pros/cons + feasibility verdict.",
+  "version": "1.0.1",
+  "description": "Generate a computational drug-discovery (CADD) target-assessment dossier for a protein target as a single self-contained HTML report: protein basics, domain architecture (number of domains, per-domain function and residue ranges), cross-species conservation, within-family/paralog identity, PDB structure catalog with ligand/agonist-antagonist annotation, modulation mechanism, and a pros/cons + feasibility verdict.",
   "author": { "name": "jinxin.liu" },
   "keywords": ["cadd", "drug-discovery", "bioinformatics", "protein", "pdb", "uniprot", "target-assessment", "structure-based-design"]
 }

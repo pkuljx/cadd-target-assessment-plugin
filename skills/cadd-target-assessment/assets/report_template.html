@@ -107,6 +107,27 @@
 <h3>Biological function</h3>
 <p>{{FUNCTION_NARRATIVE}}</p>
 
+<!-- Domain architecture: one row per architectural feature from domain_info.py
+     (domains.json), ordered N->C terminus. Transcribe residue ranges and the
+     domain count verbatim. If UniProt is sparse and you add domains from the
+     literature/InterPro, label those rows as literature-sourced in the Function
+     column and say so in {{DOMAIN_NOTE}} — don't blend silently. Drop this whole
+     subsection only for a target with no meaningful domain annotation. -->
+<h3>Domain architecture</h3>
+<p class="lead">Domains and architectural regions of the target — how many, what each
+does, and its residue range. {{DOMAIN_COUNT}} annotated domain(s). Source: UniProt
+feature table (supplemented from the literature/InterPro where noted).</p>
+<table>
+  <thead><tr><th>Domain / region</th><th>Type</th><th>Residues</th><th>Length (aa)</th><th>Function / family</th></tr></thead>
+  <tbody>
+    <!-- FILL: one <tr> per feature from domains.json; "Residues" = start–end;
+         "Function / family" = role + Pfam/InterPro/SMART family name or literature note. -->
+    <tr><td>{{DOM_NAME}}</td><td>{{DOM_TYPE}}</td><td>{{DOM_START}}–{{DOM_END}}</td>
+        <td>{{DOM_LEN}}</td><td>{{DOM_FUNCTION}}</td></tr>
+  </tbody>
+</table>
+<p class="src">{{DOMAIN_NOTE}}</p>
+
 <h2><span class="num">2</span>Cross-species conservation</h2>
 <p class="lead">Sequence identity of the human target to its orthologs — how well animal
 models share the protein (and by extension the binding site). Method: {{IDENTITY_METHOD}}.</p>
