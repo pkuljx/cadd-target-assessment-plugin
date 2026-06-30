@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Skill working dirs / generated reports
+work/
+*_assessment.html
+*.skill
+
+# OS
+.DS_Store

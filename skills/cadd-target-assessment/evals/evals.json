@@ -1,0 +1,19 @@
+{
+  "skill_name": "cadd-target-assessment",
+  "evals": [
+    {
+      "id": 0,
+      "name": "gpcr-5ht2a-antipsychotic",
+      "prompt": "I'm scoping a CADD program on the 5-HT2A receptor for an antipsychotic (antagonist / inverse-agonist) indication. Put together a target assessment for me — protein basics, how well it's conserved in the usual animal models, how close the other serotonin receptors are for selectivity, what PDB structures and ligands exist, and especially what the structures say about agonist vs antagonist binding and the activation mechanism. End with a feasibility call from a computational standpoint.",
+      "expected_output": "A single self-contained HTML report. Protein facts for human HTR2A (gene HTR2A, length 471, ~52 kDa, cell membrane, GPCR family). Species table for mouse/rat/dog/monkey with identity %. Within-family table including other 5-HT receptors. PDB structure table (dozens of entries) with ligands and agonist/antagonist annotation (e.g. risperidone/zotepine = antagonist, LSD/psilocin/serotonin = agonist). A mechanism section describing the activation switch (TM6 movement, W6.48 toggle, NPxxY) and what distinguishes agonist from antagonist. A final computational assessment with pros/cons and an explicit feasibility verdict.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "name": "ion-channel-nav17-pain",
+      "prompt": "We're starting a chronic-pain program targeting the NaV1.7 sodium channel (gene SCN9A) with small-molecule blockers. Can you do a computational target assessment? I care about the basic protein info, conservation across mouse/rat/dog/monkey, how similar the other NaV channel subtypes are (selectivity is the whole game here), what structures are in the PDB, how blockers engage the channel, and whether this is a tractable structure-based target. HTML output please.",
+      "expected_output": "A single self-contained HTML report for human SCN9A (NaV1.7), a large multi-pass membrane ion channel (~1977 aa, ~220 kDa). Species conservation table. Within-family table comparing other NaV alpha subunits (SCN1A/2A/3A/4A/5A/8A/10A/11A) — should show very high identity, flagging the selectivity challenge. PDB structure table with blocker ligands. A mechanism section on how blockers (pore blockers / VSD4 binders) engage the channel. Final assessment correctly identifying selectivity as the dominant risk, with a feasibility verdict.",
+      "files": []
+    }
+  ]
+}

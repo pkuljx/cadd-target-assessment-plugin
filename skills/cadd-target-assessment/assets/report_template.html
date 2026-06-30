@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<!--
+  CADD target-assessment report template.
+
+  HOW TO USE: copy this file to the output location, then replace every {{...}}
+  token and every <!-- FILL --> block with real content. Keep the structure and
+  CSS. Delete sections that genuinely don't apply (e.g. the Modulation-mechanism
+  section for a non-GPCR/non-channel target) rather than leaving them empty, and
+  say in the summary why. Tables: add/remove <tr> rows to match the data.
+
+  The numbers in protein facts / species / family / structure tables come
+  straight from the scripts' JSON — do not hand-edit them. Narrative blocks
+  (function, mechanism, pros/cons, feasibility) are your synthesis from UniProt
+  function text + the primary-citation papers you read.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TARGET}} — CADD Target Assessment</title>
+<style>
+  :root{
+    --ink:#1a2230; --muted:#5c6b80; --line:#e2e8f0; --accent:#2563eb;
+    --accent-soft:#eff4ff; --good:#0f7b4f; --good-soft:#e8f6ef;
+    --bad:#b4313b; --bad-soft:#fdecee; --warn:#9a6b00; --warn-soft:#fff6e0;
+  }
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"PingFang SC","Microsoft YaHei",sans-serif;
+       color:var(--ink); line-height:1.55; margin:0; background:#f6f8fb;}
+  .page{max-width:980px; margin:0 auto; padding:40px 48px 80px; background:#fff;
+        box-shadow:0 1px 4px rgba(20,30,50,.06);}
+  header{border-bottom:3px solid var(--accent); padding-bottom:18px; margin-bottom:8px;}
+  .eyebrow{font-size:12px; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); font-weight:700;}
+  h1{font-size:30px; margin:6px 0 4px;}
+  .subtitle{color:var(--muted); font-size:15px; margin:0;}
+  .meta{color:var(--muted); font-size:12.5px; margin-top:10px;}
+  h2{font-size:20px; margin:38px 0 4px; padding-top:14px; border-top:1px solid var(--line);}
+  h2 .num{color:var(--accent); font-weight:700; margin-right:8px;}
+  h3{font-size:15px; margin:22px 0 6px; color:var(--ink);}
+  p{margin:8px 0;}
+  .lead{color:var(--muted); font-size:14px; margin:2px 0 14px;}
+  table{border-collapse:collapse; width:100%; margin:14px 0; font-size:13.5px;}
+  th,td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top;}
+  th{background:var(--accent-soft); color:var(--ink); font-weight:600; font-size:12.5px;
+     text-transform:uppercase; letter-spacing:.03em;}
+  tr:hover td{background:#fafbfe;}
+  .facts{width:100%;}
+  .facts td:first-child{width:200px; color:var(--muted); font-weight:600;}
+  .pill{display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px; font-weight:600;}
+  .pill.agonist{background:var(--good-soft); color:var(--good);}
+  .pill.antagonist{background:var(--bad-soft); color:var(--bad);}
+  .pill.inverse{background:var(--warn-soft); color:var(--warn);}
+  .pill.neutral{background:#eef1f6; color:var(--muted);}
+  .pros-cons{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:14px 0;}
+  .card{border:1px solid var(--line); border-radius:10px; padding:14px 16px;}
+  .card.pros{background:var(--good-soft); border-color:#c7e7d6;}
+  .card.cons{background:var(--bad-soft); border-color:#f3cfd4;}
+  .card h4{margin:0 0 8px; font-size:14px;}
+  .card.pros h4{color:var(--good);} .card.cons h4{color:var(--bad);}
+  .card ul{margin:0; padding-left:18px;} .card li{margin:5px 0; font-size:13.5px;}
+  .verdict{display:flex; align-items:center; gap:16px; border:1px solid var(--line);
+           border-radius:10px; padding:16px 20px; margin:16px 0; background:#fbfcfe;}
+  .verdict .score{font-size:26px; font-weight:800; padding:8px 18px; border-radius:10px;}
+  .v-high{background:var(--good-soft); color:var(--good);}
+  .v-moderate{background:var(--warn-soft); color:var(--warn);}
+  .v-low{background:var(--bad-soft); color:var(--bad);}
+  .callout{background:var(--accent-soft); border-left:4px solid var(--accent);
+           padding:10px 14px; border-radius:0 8px 8px 0; margin:12px 0; font-size:13.5px;}
+  .src{font-size:12px; color:var(--muted);}
+  a{color:var(--accent); text-decoration:none;} a:hover{text-decoration:underline;}
+  code{background:#eef1f6; padding:1px 5px; border-radius:4px; font-size:12.5px;}
+  ul.tight li{margin:4px 0;}
+  footer{margin-top:50px; padding-top:14px; border-top:1px solid var(--line);
+         color:var(--muted); font-size:12px;}
+  @media print{ body{background:#fff;} .page{box-shadow:none; max-width:none; padding:0;} h2{break-after:avoid;} table,.pros-cons,.verdict{break-inside:avoid;} }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="eyebrow">CADD Target Assessment</div>
+  <h1>{{TARGET}}</h1>
+  <p class="subtitle">{{ONE_LINE_POSITIONING}}</p>
+  <p class="meta">UniProt {{ACCESSION}} ({{UNIPROT_ID}}) · {{ORGANISM}} · Generated {{DATE}} · Sources: UniProt, RCSB PDB, primary literature</p>
+</header>
+
+<!-- Record what the intake Q&A established, so the reader knows we assessed the
+     right protein. Especially important when the target name is ambiguous. -->
+<div class="callout">
+  <strong>Scope confirmed:</strong> {{INDICATION}}. Also known as {{ALIASES}}.
+  Disambiguated to {{ACCESSION}} ({{PROTEIN_NAME}}). {{DISAMBIG_NOTE}}
+</div>
+
+<h2><span class="num">1</span>Protein information</h2>
+<p class="lead">Core identity, localization, and biological role of the target.</p>
+<table class="facts">
+  <tr><td>Gene</td><td>{{GENE}} {{GENE_SYNONYMS}}</td></tr>
+  <tr><td>Protein name</td><td>{{PROTEIN_NAME}}</td></tr>
+  <tr><td>Length</td><td>{{LENGTH}} aa</td></tr>
+  <tr><td>Molecular weight</td><td>{{MASS_KDA}} kDa ({{MASS_DA}} Da)</td></tr>
+  <tr><td>Subcellular location</td><td>{{LOCATION}}</td></tr>
+  <tr><td>Family / class</td><td>{{FAMILY}}</td></tr>
+  <tr><td>Modulator type</td><td>{{MODULATOR_PILLS}}</td></tr>
+  <tr><td>PDB structures</td><td>{{N_STRUCTURES}} experimental entries</td></tr>
+</table>
+<h3>Biological function</h3>
+<p>{{FUNCTION_NARRATIVE}}</p>
+
+<h2><span class="num">2</span>Cross-species conservation</h2>
+<p class="lead">Sequence identity of the human target to its orthologs — how well animal
+models share the protein (and by extension the binding site). Method: {{IDENTITY_METHOD}}.</p>
+<table>
+  <thead><tr><th>Species</th><th>Ortholog (UniProt)</th><th>Length</th><th>% Identity</th><th>% Similarity</th></tr></thead>
+  <tbody>
+    <!-- FILL: one <tr> per species (mouse, rat, dog, monkey) from species_identity.py -->
+    <tr><td>{{SP}}</td><td>{{SP_ACC}}</td><td>{{SP_LEN}}</td><td>{{SP_ID}}</td><td>{{SP_SIM}}</td></tr>
+  </tbody>
+</table>
+<p class="src">{{SPECIES_NOTE}}</p>
+
+<h2><span class="num">3</span>Within-family identity</h2>
+<p class="lead">Identity to the closest human family members — the selectivity landscape
+a drug program must navigate. Higher identity ⇒ harder to achieve selectivity.</p>
+<table>
+  <thead><tr><th>Member</th><th>UniProt</th><th>Protein</th><th>% Identity</th><th>% Similarity</th></tr></thead>
+  <tbody>
+    <!-- FILL: one <tr> per family member from family_identity.py (target row = 100/100) -->
+    <tr><td>{{FM}}</td><td>{{FM_ACC}}</td><td>{{FM_NAME}}</td><td>{{FM_ID}}</td><td>{{FM_SIM}}</td></tr>
+  </tbody>
+</table>
+<p class="src">{{FAMILY_NOTE}}</p>
+
+<h2><span class="num">4</span>Structure summary</h2>
+<p class="lead">Experimental PDB structures of the target. "Modulator" marks whether the
+bound compound acts as an agonist, antagonist, or inverse agonist where the
+literature specifies it — central for receptors/channels with directional pharmacology.</p>
+<table>
+  <thead><tr><th>PDB</th><th>Method</th><th>Res.</th><th>Positions</th><th>Ligand</th><th>Modulator</th><th>Reference</th></tr></thead>
+  <tbody>
+    <!-- FILL: one <tr> per structure from pdb_structures.py. Map ligand comp_id to
+         the common drug name (from the structure title); set the Modulator pill
+         from the paper. Reference = linked title or DOI/PMID. -->
+    <tr><td>{{PDB}}</td><td>{{PDB_METHOD}}</td><td>{{PDB_RES}} Å</td><td>{{PDB_POS}}</td>
+        <td>{{PDB_LIG}}</td><td>{{PDB_MOD}}</td><td>{{PDB_REF}}</td></tr>
+  </tbody>
+</table>
+<h3>Pocket &amp; binding observations</h3>
+<ul class="tight">
+  <!-- FILL: bullets on the orthosteric/allosteric pocket(s), key anchoring
+       residues, conserved vs target-specific subpockets — from the papers. -->
+  <li>{{POCKET_BULLET}}</li>
+</ul>
+
+<!-- Section 5 is REQUIRED for GPCRs, ion channels, nuclear receptors and other
+     targets with agonist/antagonist (directional) pharmacology. For a target with
+     no such switch (e.g. an enzyme inhibited at the active site) replace it with a
+     short "Mechanism of small-molecule regulation" subsection or delete it and note
+     why in the summary. -->
+<h2><span class="num">5</span>Mechanism of modulation (agonist ↔ antagonist)</h2>
+<p class="lead">How small molecules switch the target between functional states, drawn
+from the structural papers above.</p>
+<h3>Activation / inactivation switch</h3>
+<p>{{MECHANISM_NARRATIVE}}</p>
+<h3>What distinguishes an agonist from an antagonist here</h3>
+<ul class="tight">
+  <li>{{AGONIST_VS_ANTAGONIST_BULLET}}</li>
+</ul>
+<div class="callout">{{MECHANISM_KEY_PAPER}}</div>
+
+<h2><span class="num">6</span>Computational assessment</h2>
+<p class="lead">Bottom line from a structure-based / CADD standpoint.</p>
+
+<h3>Protein</h3>
+<p>{{ASSESS_PROTEIN}}</p>
+<h3>Homology</h3>
+<p>{{ASSESS_HOMOLOGY}}</p>
+<h3>Structure</h3>
+<p>{{ASSESS_STRUCTURE}}</p>
+
+<div class="pros-cons">
+  <div class="card pros">
+    <h4>Pros (computational)</h4>
+    <ul>
+      <!-- FILL: e.g. rich apo+holo structures, clear pocket, chemotype precedent,
+           exploitable selectivity subpockets, good model-organism conservation. -->
+      <li>{{PRO}}</li>
+    </ul>
+  </div>
+  <div class="card cons">
+    <h4>Cons / risks (computational)</h4>
+    <ul>
+      <!-- FILL: e.g. high family identity ⇒ selectivity hard, no apo structure,
+           flexible loops, only low-resolution EM, off-target/hERG liabilities. -->
+      <li>{{CON}}</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Feasibility</h3>
+<div class="verdict">
+  <!-- score class: v-high / v-moderate / v-low -->
+  <span class="score {{FEAS_CLASS}}">{{FEAS_LABEL}}</span>
+  <div>{{FEAS_RATIONALE}}</div>
+</div>
+
+<h3>Suggested computational approach</h3>
+<ul class="tight">
+  <!-- FILL: concrete next steps — SBDD anchored on which PDB(s), docking/FEP,
+       generative design constraints, selectivity multi-objective scoring, MD of
+       the activation switch, etc. -->
+  <li>{{APPROACH_BULLET}}</li>
+</ul>
+
+<footer>
+  Generated by the <code>cadd-target-assessment</code> skill. Hard data (identity,
+  structure tables) is computed from UniProt and RCSB PDB; mechanism and assessment
+  narrative are synthesized from the cited primary literature. Verify key claims
+  against the linked papers before acting on them.
+</footer>
+
+</div>
+</body>
+</html>
